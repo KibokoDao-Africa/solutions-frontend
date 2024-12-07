@@ -10,7 +10,7 @@ const Home = () => {
 
   // Fetch solutions data
   useEffect(() => {
-    axios.get('http://localhost:8000/api/solutions/')
+o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
       .then((response) => setSolutions(response.data))
       .catch((error) => console.error('Error fetching solutions:', error));
   }, []);
