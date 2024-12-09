@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid, Card, CardContent, Button, useTheme } from '@mui/material';
-import SolutionsList from './SolutionsList';
-import { heartbeat, typewriter, cursor } from './animations';
 import axios from 'axios';
 
 const Home = () => {
   const [solutions, setSolutions] = useState([]);
-  const theme = useTheme();  // Use theme if necessary (e.g., colors or spacing)
+  const theme = useTheme(); // Use theme if necessary (e.g., colors or spacing)
 
   // Fetch solutions data
   useEffect(() => {
-o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
-      .then((response) => setSolutions(response.data))
-      .catch((error) => console.error('Error fetching solutions:', error));
+    console.log('Fetching solutions from backend...');
+    axios.get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
+      .then((response) => {
+        console.log('Data fetched successfully:', response.data);
+        setSolutions(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching solutions:', error.message);
+        console.log('Full error details:', error);
+      });
   }, []);
 
   return (
@@ -23,12 +28,12 @@ o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/so
         py: 6,
       }}
     >
+      {/* Header Section */}
       <Typography
         variant="h1"
         sx={{
           fontWeight: 'bold',
           color: '#752c34',
-          animation: `${heartbeat} 1.5s infinite`,
         }}
       >
         SOLUTIONS CENTER
@@ -39,10 +44,6 @@ o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/so
           fontWeight: 'bold',
           color: '#552c88',
           mt: 2,
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          display: 'inline-block',
-          animation: `${typewriter} 6s steps(30, end) infinite, ${cursor} 3s step-end infinite`,
         }}
       >
         Your Problems Solved......
@@ -86,11 +87,11 @@ o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/so
               sx={{
                 color: '#333',
                 fontSize: '1.1rem',
-                lineHeight: 2, // Double line spacing
+                lineHeight: 2,
                 textAlign: 'justify',
               }}
             >
-              This is where people work out solutions. People volunteer solutions to problems for which they have worked out solutions. Those who benefit from the solution are encouraged to show appreciation for the effort by a voluntary donation to the solutions provider. People or organizations request people in the open public to work out solutions to problems they are struggling with. People or organizations ask outsiders to work out new procedures, new processes, or even design better and newer products. The outsiders will provide these solutions to those who request at an agreed fee. Today outsourcing solutions is a common practice in business. Sell a solution to a problem you have seen people or organizations struggle with. Look at various areas of human endeavor. Identify problems people or organizations are struggling with. Work out solutions to those problems.
+              This is where people work out solutions. People volunteer solutions to problems for which they have worked out solutions. Those who benefit from the solution are encouraged to show appreciation for the effort by a voluntary donation to the solutions provider.
             </Typography>
           </CardContent>
         </Card>
@@ -98,7 +99,15 @@ o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/so
 
       {/* Section 3: Services */}
       <Box sx={{ px: 3, py: 5 }}>
-        <Typography variant="h4" sx={{ color: '#552c88', textAlign: 'center', mb: 4, fontWeight: 700, }}>
+        <Typography
+          variant="h4"
+          sx={{
+            color: '#552c88',
+            textAlign: 'center',
+            mb: 4,
+            fontWeight: 700,
+          }}
+        >
           Solutions Center Services
         </Typography>
         <Grid container spacing={3}>
@@ -149,8 +158,8 @@ o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/so
         </Grid>
       </Box>
 
-            {/* Display Solutions Section */}
-            <Box sx={{ px: 3, py: 5 }}>
+      {/* Display Solutions Section */}
+      <Box sx={{ px: 3, py: 5 }}>
         <Typography
           variant="h4"
           sx={{
@@ -167,10 +176,33 @@ o    axios.get('https://solutionscenter-backend-production.up.railway.app/api/so
             No solutions available at the moment.
           </Typography>
         ) : (
-          <SolutionsList solutions={solutions} />
+          <Grid container spacing={3}>
+            {solutions.map((solution) => (
+              <Grid item xs={12} sm={6} md={4} key={solution.id}>
+                <Card sx={{ borderRadius: '16px', boxShadow: 3 }}>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ color: '#333', fontWeight: 700 }}>
+                      {solution.solution_type.toUpperCase()} Solution
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <strong>Description:</strong> {solution.description}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <strong>Terms:</strong> {solution.terms}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <strong>Amount to Charge:</strong> {solution.amount_to_charge || 'N/A'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <strong>Amount Willing to Pay:</strong> {solution.amount_willing_to_pay || 'N/A'}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         )}
       </Box>
- 
     </Box>
   );
 };
