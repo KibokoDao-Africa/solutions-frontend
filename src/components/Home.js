@@ -31,6 +31,7 @@ const Home = () => {
     axios
       .get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
       .then((response) => setSolutions(response.data))
+         console.log(response.data); // Log the response data to check the number
       .catch((error) => console.error('Error fetching solutions:', error));
   }, []);
 
