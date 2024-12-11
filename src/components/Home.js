@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, useTheme, Paper, Pagination, PaginationItem } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Button, useTheme, Paper } from '@mui/material';
 import { motion } from 'framer-motion';
 import { FaLightbulb, FaHandsHelping, FaCoins } from 'react-icons/fa';
 import axios from 'axios';
-
+import PaginationComponent from './components/Pagination';
 // Animation Variants
 const fadeIn = {
   hidden: { opacity: 0 },
