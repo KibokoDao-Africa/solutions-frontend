@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, useTheme, Paper } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Button, useTheme, Paper, Pagination, PaginationItem } from '@mui/material';
 import { motion } from 'framer-motion';
 import { FaLightbulb, FaHandsHelping, FaCoins } from 'react-icons/fa';
 import axios from 'axios';
@@ -39,16 +39,8 @@ const Home = () => {
   const indexOfFirstSolution = indexOfLastSolution - itemsPerPage;
   const currentSolutions = solutions.slice(indexOfFirstSolution, indexOfLastSolution);
 
-  const handleNextPage = () => {
-    if (currentPage < Math.ceil(solutions.length / itemsPerPage)) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   // Auto-scroll to the top of the Browse Solutions section when switching pages
@@ -298,29 +290,30 @@ const Home = () => {
         )}
         {/* Pagination */}
         <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <Button
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            sx={{ mx: 1 }}
-          >
-            Previous
-          </Button>
-          <Typography
-            component="span"
-            sx={{ mx: 2, color: muiTheme.palette.text.secondary }}
-          >
-            Page {currentPage} of {Math.ceil(solutions.length / itemsPerPage)}
-          </Typography>
-          <Button
-            onClick={handleNextPage}
-            disabled={currentPage === Math.ceil(solutions.length / itemsPerPage)}
-            sx={{ mx: 1 }}
-          >
-            Next
-          </Button>
+          <Pagination
+            count={Math.ceil(solutions.length / itemsPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+            siblingCount={1}
+            boundaryCount={1}
+            color="primary"
+            renderItem={(item) => (
+              <PaginationItem
+                {...item}
+                sx={{
+                  borderRadius: '8px',
+                  boxShadow: 2,
+                  '&.Mui-selected': {
+                    backgroundColor: '#9b51e0',
+                    color: '#fff',
+                  },
+                }}
+              />
+            )}
+          />
         </Box>
       </Box>
-    </Box>
+    </Box> {/* Closing this Box */}
   );
 };
 
