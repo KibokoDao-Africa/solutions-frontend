@@ -291,28 +291,26 @@ const Home = () => {
         {/* Pagination */}
         <Box sx={{ mt: 4, textAlign: 'center' }}>
           <Pagination
-            count={Math.ceil(solutions.length / itemsPerPage)}
-            page={currentPage}
-            onChange={handlePageChange}
-            siblingCount={1}
-            boundaryCount={1}
-            color="primary"
-            renderItem={(item) => (
-              <PaginationItem
-                {...item}
-                sx={{
-                  borderRadius: '8px',
-                  boxShadow: 2,
-                  '&.Mui-selected': {
-                    backgroundColor: '#9b51e0',
-                    color: '#fff',
-                  },
-                }}
-
-)}
-              />
-            )}
-          />
+  count={Math.ceil(solutions.length / itemsPerPage)}
+  page={currentPage}
+  onChange={handlePageChange}
+  siblingCount={1}
+  boundaryCount={1}
+  color="primary"
+  renderItem={(item) => (
+    <PaginationItem
+      {...item}
+      sx={{
+        borderRadius: '8px',
+        boxShadow: 2,
+        '&.Mui-selected': {
+          backgroundColor: '#9b51e0',
+          color: '#fff',
+        },
+      }}
+    />
+  )}
+/>
         </Box>
       </Box>
 
