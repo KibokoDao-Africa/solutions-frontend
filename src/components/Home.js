@@ -313,24 +313,6 @@ const Home = () => {
 />
         </Box>
       </Box>
-
-      {/* Footer Section */}
-      <Box
-        sx={{
-          mt: 8,
-          py: 4,
-          backgroundColor: muiTheme.palette.primary.main,
-          color: muiTheme.palette.common.white,
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="body2">
-          © {new Date().getFullYear()} Solutions Center. All Rights Reserved.
-        </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          Developed with ❤️ by Gethsun Misesi.
-        </Typography>
-      </Box>
     </Box>
   );
 };
