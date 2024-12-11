@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, useTheme, Paper, Pagination } from '@mui/material';
-import { motion } from 'framer-motion'; // For animations
+import { Box, Typography, Grid, Card, CardContent, Button, useTheme, Paper } from '@mui/material';
+import { motion } from 'framer-motion';
 import { FaLightbulb, FaHandsHelping, FaCoins } from 'react-icons/fa';
 import axios from 'axios';
 
+// Animation Variants
 const fadeIn = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 1 } },
@@ -23,9 +24,8 @@ const staggerContainer = {
 const Home = () => {
   const [solutions, setSolutions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6); // Number of solutions per page
   const muiTheme = useTheme();
-
-  const itemsPerPage = 4;
 
   useEffect(() => {
     axios
@@ -34,16 +34,33 @@ const Home = () => {
       .catch((error) => console.error('Error fetching solutions:', error));
   }, []);
 
-  // Paginate Solutions
-  const paginatedSolutions = solutions.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Pagination Logic
+  const indexOfLastSolution = currentPage * itemsPerPage;
+  const indexOfFirstSolution = indexOfLastSolution - itemsPerPage;
+  const currentSolutions = solutions.slice(indexOfFirstSolution, indexOfLastSolution);
 
-  const handlePageChange = (_, value) => {
-    setCurrentPage(value);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(solutions.length / itemsPerPage)) {
+      setCurrentPage((prev) => prev + 1);
+    }
   };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  // Auto-scroll to the top of the Browse Solutions section when switching pages
+  useEffect(() => {
+    const scrollToTop = () => {
+      const browseSection = document.getElementById('browse-solutions');
+      if (browseSection) {
+        browseSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    scrollToTop();
+  }, [currentPage]);
 
   return (
     <Box
@@ -86,8 +103,130 @@ const Home = () => {
         </motion.div>
       </motion.div>
 
+      {/* Highlight Section */}
+      <motion.div variants={slideUp} initial="hidden" animate="visible" sx={{ mt: 6 }}>
+        <Paper
+          elevation={6}
+          sx={{
+            p: 4,
+            maxWidth: 800,
+            mx: 'auto',
+            borderRadius: 4,
+            background: 'linear-gradient(to right, #e3f2fd, #fce4ec)',
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              color: muiTheme.palette.primary.main,
+              fontWeight: 700,
+              mb: 2,
+              textAlign: 'center',
+            }}
+          >
+            Empowering Communities
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              color: muiTheme.palette.text.secondary,
+              lineHeight: 1.8,
+            }}
+          >
+            We bring people together to solve problems, share solutions, and make an impact. Join us to volunteer, request, or sell solutions for real-world challenges.
+          </Typography>
+        </Paper>
+      </motion.div>
+
+      {/* Services Section */}
+      <Box sx={{ mt: 8 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            color: '#9b51e0',
+            fontWeight: 700,
+            textAlign: 'center',
+            mb: 4,
+          }}
+        >
+          Our Services
+        </Typography>
+        <Grid container spacing={6}>
+          {[
+            {
+              icon: <FaHandsHelping size={50} color="#9b51e0" />,
+              title: 'Volunteer a Solution',
+              description: 'Offer your expertise and contribute to the community.',
+              buttonText: 'Volunteer Now',
+            },
+            {
+              icon: <FaLightbulb size={50} color="#9b51e0" />,
+              title: 'Request a Solution',
+              description: 'Find solutions to your toughest challenges.',
+              buttonText: 'Request Help',
+            },
+            {
+              icon: <FaCoins size={50} color="#9b51e0" />,
+              title: 'Sell a Solution',
+              description: 'Monetize your innovative ideas and solutions.',
+              buttonText: 'Start Selling',
+            },
+          ].map((service, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <motion.div variants={fadeIn}>
+                <Card
+                  sx={{
+                    borderRadius: 4,
+                    boxShadow: 6,
+                    textAlign: 'center',
+                    py: 4,
+                    px: 2,
+                  }}
+                >
+                  {service.icon}
+                  <CardContent>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: 700,
+                        color: muiTheme.palette.primary.dark,
+                        mb: 2,
+                      }}
+                    >
+                      {service.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: muiTheme.palette.text.secondary }}
+                    >
+                      {service.description}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        mt: 3,
+                        borderRadius: 2,
+                        px: 4,
+                        fontWeight: 600,
+                        color: '#ff6900',
+                        '&:hover': {
+                          backgroundColor: '#ff6900',
+                          color: muiTheme.palette.common.white,
+                        },
+                      }}
+                    >
+                      {service.buttonText}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
       {/* Browse Solutions Section */}
-      <Box sx={{ my: 6 }}>
+      <Box sx={{ my: 6 }} id="browse-solutions">
         <Typography
           variant="h4"
           sx={{
@@ -109,99 +248,77 @@ const Home = () => {
             No solutions available at the moment.
           </Typography>
         ) : (
-          <>
-            <Grid container spacing={4}>
-              {paginatedSolutions.map((solution) => (
-                <Grid item xs={12} sm={6} md={6} key={solution.id}>
-                  <motion.div variants={fadeIn} initial="hidden" animate="visible">
-                    <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                      <CardContent>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontWeight: 600,
-                            color: '#ff6900',
-                          }}
-                        >
-                          {solution.solution_type.toUpperCase()} Solution
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                        >
-                          <strong>Description:</strong> {solution.description}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                        >
-                          <strong>Terms:</strong> {solution.terms}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                        >
-                          <strong>Amount to Charge:</strong>{' '}
-                          {solution.amount_to_charge || 'N/A'}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                        >
-                          <strong>Amount Willing to Pay:</strong>{' '}
-                          {solution.amount_willing_to_pay || 'N/A'}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Grid>
-              ))}
-            </Grid>
-
-            {/* Pagination */}
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-              <Pagination
-                count={Math.ceil(solutions.length / itemsPerPage)}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-              />
-            </Box>
-
-            {/* Scrollable Widgets */}
-            <Box sx={{ mt: 6, overflowX: 'scroll', display: 'flex', gap: 2 }}>
-              {solutions.map((solution) => (
-                <motion.div
-                  key={solution.id}
-                  variants={fadeIn}
-                  initial="hidden"
-                  animate="visible"
-                  style={{ minWidth: 300 }}
-                >
+          <Grid container spacing={4}>
+            {currentSolutions.map((solution) => (
+              <Grid item xs={12} sm={6} md={4} key={solution.id}>
+                <motion.div variants={fadeIn} initial="hidden" animate="visible">
                   <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
                     <CardContent>
                       <Typography
                         variant="h6"
                         sx={{
                           fontWeight: 600,
-                          color: '#9b51e0',
+                          color: '#ff6900',
                         }}
                       >
                         {solution.solution_type.toUpperCase()} Solution
                       </Typography>
                       <Typography
                         variant="body2"
-                        sx={{ color: muiTheme.palette.text.secondary }}
+                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
                       >
-                        {solution.description}
+                        <strong>Description:</strong> {solution.description}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
+                      >
+                        <strong>Terms:</strong> {solution.terms}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
+                      >
+                        <strong>Amount to Charge:</strong>{' '}
+                        {solution.amount_to_charge || 'N/A'}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
+                      >
+                        <strong>Amount Willing to Pay:</strong>{' '}
+                        {solution.amount_willing_to_pay || 'N/A'}
                       </Typography>
                     </CardContent>
                   </Card>
                 </motion.div>
-              ))}
-            </Box>
-          </>
+              </Grid>
+            ))}
+          </Grid>
         )}
+        {/* Pagination */}
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
+          <Button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            sx={{ mx: 1 }}
+          >
+            Previous
+          </Button>
+          <Typography
+            component="span"
+            sx={{ mx: 2, color: muiTheme.palette.text.secondary }}
+          >
+            Page {currentPage} of {Math.ceil(solutions.length / itemsPerPage)}
+          </Typography>
+          <Button
+            onClick={handleNextPage}
+            disabled={currentPage === Math.ceil(solutions.length / itemsPerPage)}
+            sx={{ mx: 1 }}
+          >
+            Next
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
