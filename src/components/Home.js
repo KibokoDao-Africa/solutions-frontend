@@ -220,6 +220,7 @@ const Home = () => {
         </Grid>
       </Box>
 
+
       {/* Browse Solutions Section */}
       <Box sx={{ my: 6 }} id="browse-solutions">
         <Typography
@@ -291,29 +292,14 @@ const Home = () => {
             ))}
           </Grid>
         )}
-        {/* Pagination */}
+
+        {/* Pagination Component */}
         <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <Pagination
-  count={Math.ceil(solutions.length / itemsPerPage)}
-  page={currentPage}
-  onChange={handlePageChange}
-  siblingCount={1}
-  boundaryCount={1}
-  color="primary"
-  renderItem={(item) => (
-    <PaginationItem
-      {...item}
-      sx={{
-        borderRadius: '8px',
-        boxShadow: 2,
-        '&.Mui-selected': {
-          backgroundColor: '#9b51e0',
-          color: '#fff',
-        },
-      }}
-    />
-  )}
-/>
+          <PaginationComponent
+            count={Math.ceil(solutions.length / itemsPerPage)}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+          />
         </Box>
       </Box>
     </Box>
@@ -321,3 +307,4 @@ const Home = () => {
 };
 
 export default Home;
+          
