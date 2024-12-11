@@ -124,7 +124,7 @@ const Home = () => {
               textAlign: 'center',
             }}
           >
-            Empowering Communities
+            Preview
           </Typography>
           <Typography
             variant="body1"
