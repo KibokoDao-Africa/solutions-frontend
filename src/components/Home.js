@@ -27,13 +27,15 @@ const Home = () => {
   const [itemsPerPage] = useState(6); // Number of solutions per page
   const muiTheme = useTheme();
 
-  useEffect(() => {
-    axios
-      .get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
-      .then((response) => setSolutions(response.data))
-         console.log(response.data); // Log the response data to check the number
-      .catch((error) => console.error('Error fetching solutions:', error));
-  }, []);
+   useEffect(() => {
+  axios
+    .get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
+    .then((response) => {
+      console.log(response.data); // Log the response data to check the number of solutions
+      setSolutions(response.data);
+    })
+    .catch((error) => console.error('Error fetching solutions:', error));
+}, []);
 
   // Pagination Logic
   const indexOfLastSolution = currentPage * itemsPerPage;
