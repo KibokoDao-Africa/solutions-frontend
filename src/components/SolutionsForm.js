@@ -23,30 +23,42 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
   const isSell = solutionType === "sell";
   const isRequest = solutionType === "request";
   const isVolunteer = solutionType === "volunteer";
+  
+const handleSubmit = async () => {
+  setLoading(true);
+  setError(null);
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    setError(null);
+  try {
+    // Retrieve the user_id from localStorage
+    const user_id = localStorage.getItem("user_id");
 
-    try {
-      const payload = {
-        solution_type: solutionType,
-        description,
-        terms: terms || null,
-        ...(isSell && { amount_to_charge: parseFloat(amount) }),
-        ...(isRequest && { amount_willing_to_pay: parseFloat(amount) }),
-      };
-
-      await axios.post("http://localhost:8000/api/solutions/", payload);
-      alert("Solution submitted successfully!");
-      handleClose();
-    } catch (err) {
-      setError("Failed to submit the solution. Please try again.");
-    } finally {
-      setLoading(false);
+    // Ensure that user_id exists
+    if (!user_id) {
+      throw new Error("User not logged in");
     }
-  };
 
+    const payload = {
+      solution_type: solutionType,
+      description,
+      terms: terms || null,
+      ...(isSell && { amount_to_charge: parseFloat(amount) }),
+      ...(isRequest && { amount_willing_to_pay: parseFloat(amount) }),
+      user_id: user_id, // Add user_id from localStorage
+    };
+
+    await axios.post("http://localhost:8000/api/solutions/", payload);
+    alert("Solution submitted successfully!");
+    handleClose();
+  } catch (err) {
+    setError("Failed to submit the solution. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+  
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{`Create a ${solutionType} Solution`}</DialogTitle>
