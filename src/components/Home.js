@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, useTheme, Paper } from '@mui/material';
+import { Box, Typography, useTheme, Paper, Divider } from '@mui/material';
 import { motion } from 'framer-motion';
-import { FaLightbulb, FaHandsHelping, FaCoins } from 'react-icons/fa';
 import axios from 'axios';
-import PaginationComponent from '../components/Pagination';
+import SolutionsList from '../components/SolutionsList';
+import ServicesSection from '../components/ServicesSection';
+
 // Animation Variants
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -24,38 +25,17 @@ const staggerContainer = {
 const Home = () => {
   const [solutions, setSolutions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6); // Number of solutions per page
+  const [itemsPerPage] = useState(6);
   const muiTheme = useTheme();
 
-   useEffect(() => {
-  axios
-    .get('http://localhost:8000/api/solutions/')
-    .then((response) => {
-      console.log(response.data); // Log the response data to check the number of solutions
-      setSolutions(response.data);
-    })
-    .catch((error) => console.error('Error fetching solutions:', error));
-}, []);
-
-  // Pagination Logic
-  const indexOfLastSolution = currentPage * itemsPerPage;
-  const indexOfFirstSolution = indexOfLastSolution - itemsPerPage;
-  const currentSolutions = solutions.slice(indexOfFirstSolution, indexOfLastSolution);
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  // Auto-scroll to the top of the Browse Solutions section when switching pages
   useEffect(() => {
-    const scrollToTop = () => {
-      const browseSection = document.getElementById('browse-solutions');
-      if (browseSection) {
-        browseSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    };
-    scrollToTop();
-  }, [currentPage]);
+    axios
+      .get('http://localhost:8000/api/solutions/')
+      .then((response) => {
+        setSolutions(response.data);
+      })
+      .catch((error) => console.error('Error fetching solutions:', error));
+  }, []);
 
   return (
     <Box
@@ -124,188 +104,30 @@ const Home = () => {
           <Typography
             variant="body1"
             sx={{
-              color: muiTheme.palette.text.secondary,
               lineHeight: 1.8,
             }}
           >
-            
-This is where people work out solutions. People volunteer solutions to problems for which they have worked out solutions. Those who benefit from the solution are encouraged to show appreciation for the effort by a voluntary donation to the solutions provider. People or organizations request people in the open public to work out solutions to problems they are struggling with. People or organizations ask outsiders to work out new procedures, new processes, or even design better and newer products. The outsiders will provide these solutions to those who request at an agreed fee. Today outsourcing solutions is a common practice in business. Sell a solution to a problem you have seen people or organizations struggle with. Look at various areas of human endeavor. Identify problems people or organizations are struggling with. Work out solutions to those problems.
+            This is where people work out solutions...
           </Typography>
         </Paper>
       </motion.div>
 
+        
       {/* Services Section */}
-      <Box sx={{ mt: 8 }}>
-        <Typography
-          variant="h4"
-          sx={{
-            color: '#9b51e0',
-            fontWeight: 700,
-            textAlign: 'center',
-            mb: 4,
-          }}
-        >
-          Our Services
-        </Typography>
-        <Grid container spacing={6}>
-          {[
-            {
-              icon: <FaHandsHelping size={50} color="#9b51e0" />,
-              title: 'Volunteer a Solution',
-              description: 'Offer your expertise and contribute to the community.',
-              buttonText: 'Volunteer Now',
-            },
-            {
-              icon: <FaLightbulb size={50} color="#9b51e0" />,
-              title: 'Request a Solution',
-              description: 'Find solutions to your toughest challenges.',
-              buttonText: 'Request Help',
-            },
-            {
-              icon: <FaCoins size={50} color="#9b51e0" />,
-              title: 'Sell a Solution',
-              description: 'Monetize your innovative ideas and solutions.',
-              buttonText: 'Start Selling',
-            },
-          ].map((service, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <motion.div variants={fadeIn}>
-                <Card
-                  sx={{
-                    borderRadius: 4,
-                    boxShadow: 6,
-                    textAlign: 'center',
-                    py: 4,
-                    px: 2,
-                  }}
-                >
-                  {service.icon}
-                  <CardContent>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 700,
-                        color: muiTheme.palette.primary.dark,
-                        mb: 2,
-                      }}
-                    >
-                      {service.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: muiTheme.palette.text.secondary }}
-                    >
-                      {service.description}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        mt: 3,
-                        borderRadius: 2,
-                        px: 4,
-                        fontWeight: 600,
-                        color: '#ff6900',
-                        '&:hover': {
-                          backgroundColor: '#ff6900',
-                          color: muiTheme.palette.common.white,
-                        },
-                      }}
-                    >
-                      {service.buttonText}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+      <ServicesSection />
 
+       {/* Divider */}
+      <Divider sx={{ my: 6, borderWidth: 2, borderColor: muiTheme.palette.divider }} />
 
-      {/* Browse Solutions Section */}
-      <Box sx={{ my: 6 }} id="browse-solutions">
-        <Typography
-          variant="h4"
-          sx={{
-            color: '#9b51e0',
-            fontWeight: 700,
-            mb: 3,
-            textAlign: 'center',
-          }}
-        >
-          Browse Existing Solutions
-        </Typography>
-        {solutions.length === 0 ? (
-          <Typography
-            sx={{
-              color: muiTheme.palette.text.secondary,
-              textAlign: 'center',
-            }}
-          >
-            No solutions available at the moment.
-          </Typography>
-        ) : (
-          <Grid container spacing={4}>
-            {currentSolutions.map((solution) => (
-              <Grid item xs={12} sm={6} md={4} key={solution.id}>
-                <motion.div variants={fadeIn} initial="hidden" animate="visible">
-                  <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: 600,
-                          color: '#ff6900',
-                        }}
-                      >
-                        {solution.solution_type.toUpperCase()} Solution
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                      >
-                        <strong>Description:</strong> {solution.description}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                      >
-                        <strong>Terms:</strong> {solution.terms}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                      >
-                        <strong>Amount to Charge:</strong>{' '}
-                        {solution.amount_to_charge || 'N/A'}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: muiTheme.palette.text.secondary, mt: 1 }}
-                      >
-                        <strong>Amount Willing to Pay:</strong>{' '}
-                        {solution.amount_willing_to_pay || 'N/A'}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-        )}
-
-        {/* Pagination Component */}
-        <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <PaginationComponent
-            count={Math.ceil(solutions.length / itemsPerPage)}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-          />
-        </Box>
-      </Box>
+      {/* Solutions List */}
+      <SolutionsList
+        solutions={solutions}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        handlePageChange={(event, value) => setCurrentPage(value)}
+      />
     </Box>
   );
 };
 
 export default Home;
-          

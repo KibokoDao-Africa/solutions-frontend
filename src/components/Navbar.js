@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/images/solutionslogo.png';
+import logo from '../assets/images/solutionslogobg.png';
 const Navbar = () => {
   const [username, setUsername] = useState(null);
   const navigate = useNavigate();
@@ -45,7 +45,6 @@ const Navbar = () => {
                 height: 40,
                 width: 'auto',
                 borderRadius: 1,
-                border: '2px solid #ff6900',
                 marginRight: 2,
                 cursor: 'pointer',
               }}
