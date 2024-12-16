@@ -25,47 +25,47 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
   const isVolunteer = solutionType === "volunteer";
   
   const handleSubmit = async () => {
-  setLoading(true);
-  setError(null);
+    setLoading(true);
+    setError(null);
 
-  try {
-    // Retrieve the user_id from localStorage
-    const user_id = localStorage.getItem("user_id");
+    try {
+      // Retrieve the user_id from localStorage
+      const user_id = localStorage.getItem("user_id");
 
-    // Ensure that user_id exists
-    if (!user_id) {
-      throw new Error("User not logged in");
+      // Log the user_id to check if it's available
+      console.log("User ID retrieved from localStorage:", user_id);
+
+      // Ensure that user_id exists
+      if (!user_id) {
+        throw new Error("User not logged in");
+      }
+
+      const payload = {
+        solution_type: solutionType,
+        description,
+        terms: terms || null,
+        ...(isSell && { amount_to_charge: parseFloat(amount) }),
+        ...(isRequest && { amount_willing_to_pay: parseFloat(amount) }),
+        user_id: user_id, // Add user_id from localStorage
+      };
+
+      console.log("Payload being sent:", payload); // Log payload to check
+
+      await axios.post("http://localhost:8000/api/solutions/", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      alert("Solution submitted successfully!");
+      handleClose();
+    } catch (err) {
+      console.error("Error submitting solution:", err); // Log error to console for debugging
+      setError("Failed to submit the solution. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    console.log("User ID:", user_id); // Log user_id to check if it's available
-
-    const payload = {
-      solution_type: solutionType,
-      description,
-      terms: terms || null,
-      ...(isSell && { amount_to_charge: parseFloat(amount) }),
-      ...(isRequest && { amount_willing_to_pay: parseFloat(amount) }),
-      user_id: user_id, // Add user_id from localStorage
-    };
-
-    console.log("Payload being sent:", payload); // Log payload to check
-
-    await axios.post("http://localhost:8000/api/solutions/", payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    alert("Solution submitted successfully!");
-    handleClose();
-  } catch (err) {
-    console.error("Error submitting solution:", err); // Log error to console for debugging
-    setError("Failed to submit the solution. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
   
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
