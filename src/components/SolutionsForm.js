@@ -24,7 +24,7 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
   const isRequest = solutionType === "request";
   const isVolunteer = solutionType === "volunteer";
   
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
   setLoading(true);
   setError(null);
 
@@ -37,6 +37,8 @@ const handleSubmit = async () => {
       throw new Error("User not logged in");
     }
 
+    console.log("User ID:", user_id); // Log user_id to check if it's available
+
     const payload = {
       solution_type: solutionType,
       description,
@@ -46,17 +48,23 @@ const handleSubmit = async () => {
       user_id: user_id, // Add user_id from localStorage
     };
 
-    await axios.post("http://localhost:8000/api/solutions/", payload);
+    console.log("Payload being sent:", payload); // Log payload to check
+
+    await axios.post("http://localhost:8000/api/solutions/", payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
     alert("Solution submitted successfully!");
     handleClose();
   } catch (err) {
+    console.error("Error submitting solution:", err); // Log error to console for debugging
     setError("Failed to submit the solution. Please try again.");
   } finally {
     setLoading(false);
   }
 };
-
-
 
   
   return (
