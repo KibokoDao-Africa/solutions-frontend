@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Container, Link } from '@mui/material';
 
 const Login = () => {
+  const navigate = useNavigate(); // Initialize navigate
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -47,13 +49,16 @@ const Login = () => {
             first_name: firstName, 
             last_name: lastName 
           });
-          alert('Account created! Please log in.');
+          alert('Account created! Redirecting to login...');
+          navigate('/login'); // Redirect to login page
         } else {
           // Log in existing user
           const response = await axios.post('http://localhost:8000/api/token/', { username, password });
           localStorage.setItem('accessToken', response.data.access);
           localStorage.setItem('refreshToken', response.data.refresh);
-          alert('Login successful!');
+          localStorage.setItem('username', username);
+          alert('Login successful! Redirecting to home...');
+          navigate('/'); // Redirect to home page
         }
       }
     } catch (error) {
