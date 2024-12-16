@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-
+import logo from '../assets/images/solutionslogo.png';
 const Navbar = () => {
   const [username, setUsername] = useState(null);
   const navigate = useNavigate();
@@ -24,6 +24,11 @@ const Navbar = () => {
     navigate('/login'); // Redirect to the login page
   };
 
+  // Handle logo click to reload the home page
+  const handleLogoClick = () => {
+    navigate('/'); // Navigate to home page
+  };
+
   console.log('Current username:', username); // Debug log
 
   return (
@@ -31,6 +36,22 @@ const Navbar = () => {
       <Toolbar>
         <Container maxWidth="lg">
           <Box display="flex" justifyContent="space-between" alignItems="center">
+            {/* Logo with border and clickable to reload home page */}
+            <Box
+              component="img"
+              src={logo}
+              alt="Solutions Logo"
+              sx={{
+                height: 40,
+                width: 'auto',
+                borderRadius: 1,
+                border: '2px solid #ff6900',
+                marginRight: 2,
+                cursor: 'pointer',
+              }}
+              onClick={handleLogoClick} // Click handler to reload home page
+            />
+            {/* Text for Solutions Portal */}
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Solutions Portal
             </Typography>

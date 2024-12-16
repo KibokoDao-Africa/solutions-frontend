@@ -128,7 +128,8 @@ const Home = () => {
               lineHeight: 1.8,
             }}
           >
-            We bring people together to solve problems, share solutions, and make an impact. Join us to volunteer, request, or sell solutions for real-world challenges.
+            
+This is where people work out solutions. People volunteer solutions to problems for which they have worked out solutions. Those who benefit from the solution are encouraged to show appreciation for the effort by a voluntary donation to the solutions provider. People or organizations request people in the open public to work out solutions to problems they are struggling with. People or organizations ask outsiders to work out new procedures, new processes, or even design better and newer products. The outsiders will provide these solutions to those who request at an agreed fee. Today outsourcing solutions is a common practice in business. Sell a solution to a problem you have seen people or organizations struggle with. Look at various areas of human endeavor. Identify problems people or organizations are struggling with. Work out solutions to those problems.
           </Typography>
         </Paper>
       </motion.div>
