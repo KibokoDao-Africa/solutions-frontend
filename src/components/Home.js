@@ -29,7 +29,7 @@ const Home = () => {
 
    useEffect(() => {
   axios
-    .get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
+    .get('http://localhost:8000/api/solutions/')
     .then((response) => {
       console.log(response.data); // Log the response data to check the number of solutions
       setSolutions(response.data);

@@ -7,6 +7,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [isNewUser, setIsNewUser] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(false);
 
@@ -37,7 +39,14 @@ const Login = () => {
           }
 
           // Register new user
-          await axios.post('http://localhost:8000/api/register/', { username, password, email, phone });
+          await axios.post('http://localhost:8000/api/register/', { 
+            username, 
+            password, 
+            email, 
+            phone, 
+            first_name: firstName, 
+            last_name: lastName 
+          });
           alert('Account created! Please log in.');
         } else {
           // Log in existing user
@@ -83,6 +92,24 @@ const Login = () => {
               />
               {isNewUser && (
                 <>
+                  <TextField
+                    fullWidth
+                    label="First Name"
+                    variant="outlined"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    margin="normal"
+                  />
+                  <TextField
+                    fullWidth
+                    label="Last Name"
+                    variant="outlined"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    margin="normal"
+                  />
                   <TextField
                     fullWidth
                     label="Email"
