@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-
+import jwtDecode from "jwt-decode";  // Import jwt-decode to decode the token
 
 // Create the Context
 const UserContext = createContext();
@@ -25,11 +25,22 @@ export const UserProvider = ({ children }) => {
     if (token) localStorage.setItem("accessToken", token); // Store token
   }, [userId, username, token]);
 
+  // Check token expiry using jwt-decode
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    const decodedToken = jwtDecode(token);
+    return decodedToken.exp * 1000 < Date.now();
+  };
+
   // Fetch user data using token
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!token) {
-        console.error("No token found, skipping fetch.");
+      if (!token || isTokenExpired(token)) {
+        console.error("Token is invalid or expired, skipping fetch.");
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('username');
+        setUser({ userId: null, username: null, token: null });
         return;
       }
 
@@ -56,7 +67,6 @@ export const UserProvider = ({ children }) => {
           localStorage.removeItem('user_id');
           localStorage.removeItem('username');
           setUser({ userId: null, username: null, token: null });
-           
         }
       }
     };
