@@ -55,7 +55,7 @@ const Login = () => {
         navigate('/login'); // Redirect to login page
       } else {
         // Log in existing user
-        const response = await axios.post('http://localhost:8000/api/token/', { username, password });
+        const response = await axios.post('http://localhost:8000/api/login/', { username, password });
         
         // Store tokens and user data in localStorage
         localStorage.setItem('accessToken', response.data.access);
