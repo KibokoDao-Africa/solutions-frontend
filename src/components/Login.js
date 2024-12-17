@@ -76,17 +76,33 @@ const Login = () => {
 
   // Login handler
   const handleLogin = async () => {
-    const response = await axios.post('http://localhost:8000/api/login/', { username, password });
+    try {
+      const response = await axios.post('http://localhost:8000/api/login/', { username, password });
 
-    // Store tokens and user data in localStorage
-    localStorage.setItem('accessToken', response.data.access_token);
-    localStorage.setItem('refreshToken', response.data.refresh_token);
+      // Ensure the response contains access_token and refresh_token
+      const { access_token, refresh_token, user } = response.data;
 
-    // Use context to store user data
-    setUser({ userId: response.data.user.id, username, token: response.data.access_token });
+      if (!access_token || !refresh_token || !user) {
+        throw new Error('Invalid login response from the server');
+      }
 
-    alert('Login successful! Redirecting to home...');
-    navigate('/'); // Redirect to home page
+      // Store tokens and user data in localStorage
+      localStorage.setItem('accessToken', access_token);
+      localStorage.setItem('refreshToken', refresh_token);
+
+      // Use context to store user data
+      setUser({
+        userId: user.id,
+        username: user.username,
+        email: user.email,
+        token: access_token,
+      });
+
+      alert('Login successful! Redirecting to home...');
+      navigate('/'); // Redirect to home page
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   return (
