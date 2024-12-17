@@ -27,39 +27,39 @@ export const UserProvider = ({ children }) => {
   // Fetch user data using token
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!token) {
-        console.error("No token found, skipping fetch.");
-        return;
-      }
+  if (!token) {
+    console.error("No token found, skipping fetch.");
+    return;
+  }
 
-      try {
-        const response = await axios.get("http://localhost:8000/api/user/", {
-          headers: {
-            Authorization: `Bearer ${token}`, // Use token from localStorage
-          },
-        });
+  try {
+    const response = await axios.get("http://localhost:8000/api/user/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        if (response.data) {
-          // If response is valid, update user context
-          setUser({
-            userId: response.data.userId,
-            username: response.data.username,
-            token, // Retain token after user data fetch
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        if (error.response && error.response.status === 401) {
-          console.log("Token might be expired or invalid.");
-          // You can implement token refresh logic here or clear invalid token
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [token]); // Run effect only when the token changes
-
-  return (
+    if (response.data) {
+      setUser({
+        userId: response.data.userId,
+        username: response.data.username,
+        token,
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    if (error.response && error.response.status === 401) {
+      console.log("Token might be expired or invalid.");
+      // Clear invalid token and user data from localStorage
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('username');
+      setUser({ userId: null, username: null, token: null });
+      // Optionally redirect to login
+      navigate('/login');
+    }
+  }
+};
     <UserContext.Provider value={{ userId, setUser, username, token }}>
       {children}
     </UserContext.Provider>
