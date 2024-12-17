@@ -69,25 +69,34 @@ const Login = () => {
 
   // Login handler
   const handleLogin = async () => {
+  try {
     const response = await axios.post('http://localhost:8000/api/login/', { username, password });
 
-    // Store tokens and user data in localStorage
-    localStorage.setItem('accessToken', response.data.access);
-    localStorage.setItem('refreshToken', response.data.refresh);
+    // Log the response to verify tokens are being returned
+    console.log(response.data);
 
-    // Use context to store user data
-    setUser({ userId: response.data.user.id, username, token: response.data.access });
+    // Ensure tokens are available
+    if (response.data.access && response.data.refresh) {
+      localStorage.setItem('accessToken', response.data.access);   // Store access token
+      localStorage.setItem('refreshToken', response.data.refresh); // Store refresh token
 
-    alert('Login successful! Redirecting to home...');
-    navigate('/'); // Redirect to home page
-  };
+      // Use context to store user data
+      setUser({
+        userId: response.data.user.id,
+        username: response.data.user.username,
+        token: response.data.access,  // Store the access token correctly
+      });
 
-  // Error handler
-  const handleError = (error) => {
-    const errorMessage = error.response?.data?.detail || error.message || 'An unknown error occurred.';
-    console.error('Error:', errorMessage);
-    alert(`Authentication failed: ${errorMessage}`);
-  };
+      alert('Login successful! Redirecting to home...');
+      navigate('/'); // Redirect to home page
+    } else {
+      console.error('Tokens are missing in the response.');
+      alert('Login failed. Tokens are missing.');
+    }
+  } catch (error) {
+    handleError(error);
+  }
+};
 
   return (
     <Container maxWidth="xs">
