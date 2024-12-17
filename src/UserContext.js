@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+
 
 // Create the Context
 const UserContext = createContext();
@@ -56,7 +56,7 @@ export const UserProvider = ({ children }) => {
           localStorage.removeItem('user_id');
           localStorage.removeItem('username');
           setUser({ userId: null, username: null, token: null });
-            navigate('/login');
+           
         }
       }
     };
