@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Container, Link } from '@mui/material';
-import { useUser } from '../UserContext'; // Import the custom hook
 
 const Login = () => {
   const navigate = useNavigate(); // Initialize navigate
-  const { setUser } = useUser(); // Access the context
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -89,14 +87,9 @@ const Login = () => {
       // Store tokens and user data in localStorage
       localStorage.setItem('accessToken', access_token);
       localStorage.setItem('refreshToken', refresh_token);
-
-      // Use context to store user data
-      setUser({
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        token: access_token,
-      });
+      localStorage.setItem('userId', user.id);
+      localStorage.setItem('username', user.username);
+      localStorage.setItem('email', user.email);
 
       alert('Login successful! Redirecting to home...');
       navigate('/'); // Redirect to home page
