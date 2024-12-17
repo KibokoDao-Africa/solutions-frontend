@@ -9,6 +9,13 @@ export const UserProvider = ({ children }) => {
   const [userId, setUserId] = useState(localStorage.getItem("user_id") || null);
   const [username, setUsername] = useState(localStorage.getItem("username") || null);
   const [token, setToken] = useState(localStorage.getItem("accessToken") || null);
+  
+  // Function to update user information
+  const updateUser = ({ userId, username, token }) => {
+    setUserId(userId);
+    setUsername(username);
+    setToken(token);
+  };
 
   // Persist changes to localStorage
   useEffect(() => {
@@ -20,8 +27,11 @@ export const UserProvider = ({ children }) => {
   // Fetch user data using token
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!token) return;
-      
+      if (!token) {
+        console.error("No token found, skipping fetch.");
+        return;
+      }
+
       try {
         const response = await axios.get("http://localhost:8000/api/user/", {
           headers: {
@@ -30,7 +40,8 @@ export const UserProvider = ({ children }) => {
         });
 
         if (response.data) {
-          setUser({
+          // If response is valid, update user context
+          updateUser({
             userId: response.data.userId,
             username: response.data.username,
             token, // Retain token after user data fetch
@@ -38,21 +49,18 @@ export const UserProvider = ({ children }) => {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        if (error.response && error.response.status === 401) {
+          console.log("Token might be expired or invalid.");
+          // You can implement token refresh logic here or clear invalid token
+        }
       }
     };
 
     fetchUserData();
   }, [token]); // Run effect only when the token changes
 
-  // Function to update both userId, username, and token
-  const setUser = ({ userId, username, token }) => {
-    setUserId(userId);
-    setUsername(username);
-    setToken(token); // Store the token
-  };
-
   return (
-    <UserContext.Provider value={{ userId, setUser, username, token }}>
+    <UserContext.Provider value={{ userId, updateUser, username, token }}>
       {children}
     </UserContext.Provider>
   );
