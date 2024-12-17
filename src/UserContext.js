@@ -20,6 +20,8 @@ export const UserProvider = ({ children }) => {
   // Fetch user data using token
   useEffect(() => {
     const fetchUserData = async () => {
+      if (!token) return;
+      
       try {
         const response = await axios.get("http://localhost:8000/api/user/", {
           headers: {
@@ -39,10 +41,8 @@ export const UserProvider = ({ children }) => {
       }
     };
 
-    if (token) {
-      fetchUserData();
-    }
-  }, [token]);
+    fetchUserData();
+  }, [token]); // Run effect only when the token changes
 
   // Function to update both userId, username, and token
   const setUser = ({ userId, username, token }) => {
