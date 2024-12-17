@@ -5,7 +5,8 @@ import { useUser } from '../UserContext'; // Import the UserContext hook
 import logo from '../assets/images/solutionslogobg.png';
 
 const Navbar = () => {
-  const { user, setUser } = useUser(); // Access global user context (assuming user object contains userId and username)
+  // Destructure userId, username, token, and setUser from useUser context
+  const { userId, username, setUser } = useUser(); 
   const navigate = useNavigate();
 
   // Logout functionality
@@ -60,11 +61,10 @@ const Navbar = () => {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Solutions Portal
             </Typography>
-            {user?.username ? (
-              // Show username and logout button if the user is logged in
+            {username ? ( // Show username and logout button if the user is logged in
               <Box display="flex" alignItems="center">
                 <Typography variant="body1" sx={{ marginRight: 2 }}>
-                  Welcome, {user.username}
+                  Welcome, {username}
                 </Typography>
                 <Button color="inherit" onClick={handleLogout}>
                   Logout
