@@ -79,11 +79,11 @@ const Login = () => {
     const response = await axios.post('http://localhost:8000/api/login/', { username, password });
 
     // Store tokens and user data in localStorage
-    localStorage.setItem('accessToken', response.data.access);
-    localStorage.setItem('refreshToken', response.data.refresh);
+    localStorage.setItem('accessToken', response.data.access_token);
+    localStorage.setItem('refreshToken', response.data.refresh_token);
 
     // Use context to store user data
-    setUser({ userId: response.data.user.id, username, token: response.data.access });
+    setUser({ userId: response.data.user.id, username, token: response.data.access_token });
 
     alert('Login successful! Redirecting to home...');
     navigate('/'); // Redirect to home page
