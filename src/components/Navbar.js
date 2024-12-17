@@ -10,16 +10,32 @@ const Navbar = () => {
 
   // Logout functionality
   const handleLogout = () => {
+    // Clear user data from localStorage
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
     localStorage.removeItem('user_id');
-    if (setUser) {
-      setUser({ userId: null, username: null }); // Update context state
-      navigate('/login'); // Redirect to the login page
-    } else {
-      console.error('setUser is not defined');
-    }
+    
+    // Update the context state to logout user
+    setUser({ userId: null, username: null }); 
+    
+    // Redirect to the login page
+    navigate('/login'); 
+  };
+
+  // Handle login (assuming user data is available after login)
+  const handleLogin = (userData) => {
+    const { userId, username } = userData;
+
+    // Update the context state with the logged-in user data
+    setUser({ userId, username });
+
+    // Save user data to localStorage
+    localStorage.setItem('user_id', userId);
+    localStorage.setItem('username', username);
+    
+    // Navigate to the home page after login
+    navigate('/');
   };
 
   // Handle logo click to reload the home page
@@ -61,7 +77,7 @@ const Navbar = () => {
               </Box>
             ) : (
               // Show Login button if the user is not logged in
-              <Button color="inherit" component={Link} to="/login">
+              <Button color="inherit" component={Link} to="/login" onClick={() => handleLogin({ userId: '123', username: 'JohnDoe' })}>
                 Login
               </Button>
             )}

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Container, Link } from '@mui/material';
+import { useUser } from '../UserContext'; // Import the custom hook
 
 const Login = () => {
   const navigate = useNavigate(); // Initialize navigate
+  const { setUser } = useUser(); // Access the context
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -56,7 +58,10 @@ const Login = () => {
           const response = await axios.post('http://localhost:8000/api/token/', { username, password });
           localStorage.setItem('accessToken', response.data.access);
           localStorage.setItem('refreshToken', response.data.refresh);
-          localStorage.setItem('username', username);
+          
+          // Use context to store user data instead of directly in localStorage
+          setUser({ userId: response.data.user_id, username });
+
           alert('Login successful! Redirecting to home...');
           navigate('/'); // Redirect to home page
         }

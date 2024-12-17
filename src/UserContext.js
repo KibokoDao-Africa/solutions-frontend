@@ -15,8 +15,14 @@ export const UserProvider = ({ children }) => {
     if (username) localStorage.setItem("username", username);
   }, [userId, username]);
 
+  // Function to update both userId and username
+  const setUser = ({ userId, username }) => {
+    setUserId(userId);
+    setUsername(username);
+  };
+
   return (
-    <UserContext.Provider value={{ userId, setUserId, username, setUsername }}>
+    <UserContext.Provider value={{ userId, setUser, username }}>
       {children}
     </UserContext.Provider>
   );
