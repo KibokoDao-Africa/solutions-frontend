@@ -17,61 +17,65 @@ const Login = () => {
   const [isResetPassword, setIsResetPassword] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isResetPassword) {
+  e.preventDefault();
+  try {
+    if (isResetPassword) {
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      // Password reset request
+      await axios.post('http://localhost:8000/api/password_reset/', { email });
+      alert('Password reset link sent to your email.');
+      setIsResetPassword(false);
+    } else {
+      if (isNewUser) {
+        // Validate email and phone number
         if (!/\S+@\S+\.\S+/.test(email)) {
           alert('Please enter a valid email address.');
           return;
         }
 
-        // Password reset request
-        await axios.post('http://localhost:8000/api/password_reset/', { email });
-        alert('Password reset link sent to your email.');
-        setIsResetPassword(false);
-      } else {
-        if (isNewUser) {
-          // Validate email and phone number
-          if (!/\S+@\S+\.\S+/.test(email)) {
-            alert('Please enter a valid email address.');
-            return;
-          }
-
-          if (!/^\d{10}$/.test(phone)) {
-            alert('Please enter a valid 10-digit phone number.');
-            return;
-          }
-
-          // Register new user
-          await axios.post('http://localhost:8000/api/register/', { 
-            username, 
-            password, 
-            email, 
-            phone, 
-            first_name: firstName, 
-            last_name: lastName 
-          });
-          alert('Account created! Redirecting to login...');
-          navigate('/login'); // Redirect to login page
-        } else {
-          // Log in existing user
-          const response = await axios.post('http://localhost:8000/api/token/', { username, password });
-          localStorage.setItem('accessToken', response.data.access);
-          localStorage.setItem('refreshToken', response.data.refresh);
-          
-          // Use context to store user data instead of directly in localStorage
-          setUser({ userId: response.data.user_id, username });
-
-          alert('Login successful! Redirecting to home...');
-          navigate('/'); // Redirect to home page
+        if (!/^\d{10}$/.test(phone)) {
+          alert('Please enter a valid 10-digit phone number.');
+          return;
         }
-      }
-    } catch (error) {
-      console.error('Error:', error.response?.data || error.message);
-      alert('Authentication failed.');
-    }
-  };
 
+        // Register new user
+        await axios.post('http://localhost:8000/api/register/', { 
+          username, 
+          password, 
+          email, 
+          phone, 
+          first_name: firstName, 
+          last_name: lastName 
+        });
+        alert('Account created! Redirecting to login...');
+        navigate('/login'); // Redirect to login page
+      } else {
+        // Log in existing user
+        const response = await axios.post('http://localhost:8000/api/token/', { username, password });
+        
+        // Store tokens and user data in localStorage
+        localStorage.setItem('accessToken', response.data.access);
+        localStorage.setItem('refreshToken', response.data.refresh);
+        
+        // Use context to store user data instead of directly in localStorage
+        setUser({ userId: response.data.user_id, username, token: response.data.access });
+
+        alert('Login successful! Redirecting to home...');
+        navigate('/'); // Redirect to home page
+      }
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.detail || error.message || 'An unknown error occurred.';
+    console.error('Error:', errorMessage);
+    alert(`Authentication failed: ${errorMessage}`);
+  }
+};
+
+  
   return (
     <Container maxWidth="xs">
       <Box
