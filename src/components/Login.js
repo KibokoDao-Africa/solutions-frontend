@@ -16,6 +16,13 @@ const Login = () => {
   const [isNewUser, setIsNewUser] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(false);
 
+  // Error handler
+  const handleError = (error) => {
+    const errorMessage = error.response?.data?.detail || error.message || 'An unknown error occurred.';
+    console.error('Error:', errorMessage);
+    alert(`Authentication failed: ${errorMessage}`);
+  };
+
   // Function for handling form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,34 +76,18 @@ const Login = () => {
 
   // Login handler
   const handleLogin = async () => {
-  try {
     const response = await axios.post('http://localhost:8000/api/login/', { username, password });
 
-    // Log the response to verify tokens are being returned
-    console.log(response.data);
+    // Store tokens and user data in localStorage
+    localStorage.setItem('accessToken', response.data.access);
+    localStorage.setItem('refreshToken', response.data.refresh);
 
-    // Ensure tokens are available
-    if (response.data.access && response.data.refresh) {
-      localStorage.setItem('accessToken', response.data.access);   // Store access token
-      localStorage.setItem('refreshToken', response.data.refresh); // Store refresh token
+    // Use context to store user data
+    setUser({ userId: response.data.user.id, username, token: response.data.access });
 
-      // Use context to store user data
-      setUser({
-        userId: response.data.user.id,
-        username: response.data.user.username,
-        token: response.data.access,  // Store the access token correctly
-      });
-
-      alert('Login successful! Redirecting to home...');
-      navigate('/'); // Redirect to home page
-    } else {
-      console.error('Tokens are missing in the response.');
-      alert('Login failed. Tokens are missing.');
-    }
-  } catch (error) {
-    handleError(error);
-  }
-};
+    alert('Login successful! Redirecting to home...');
+    navigate('/'); // Redirect to home page
+  };
 
   return (
     <Container maxWidth="xs">
