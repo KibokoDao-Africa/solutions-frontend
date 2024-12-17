@@ -12,6 +12,7 @@ import {
   Box,
 } from "@mui/material";
 import axios from "axios";
+import { useUser } from "../UserContext"; // Import UserContext hook
 
 const SolutionsForm = ({ open, handleClose, solutionType }) => {
   const [description, setDescription] = useState("");
@@ -20,37 +21,35 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const { userId } = useUser(); // Get userId from UserContext
+
   const isSell = solutionType === "sell";
   const isRequest = solutionType === "request";
   const isVolunteer = solutionType === "volunteer";
-  
+
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Retrieve the user_id from localStorage
-      const user_id = localStorage.getItem("user_id");
-
-      // Log the user_id to check if it's available
-      console.log("User ID retrieved from localStorage:", user_id);
-
-      // Ensure that user_id exists
-      if (!user_id) {
-        throw new Error("User not logged in");
+      // Ensure userId is available
+      if (!userId) {
+        throw new Error("User not logged in. Please log in to submit a solution.");
       }
 
+      // Construct the payload
       const payload = {
         solution_type: solutionType,
         description,
         terms: terms || null,
         ...(isSell && { amount_to_charge: parseFloat(amount) }),
         ...(isRequest && { amount_willing_to_pay: parseFloat(amount) }),
-        user_id: user_id, // Add user_id from localStorage
+        user_id: userId, // Use userId from context
       };
 
-      console.log("Payload being sent:", payload); // Log payload to check
+      console.log("Payload being sent:", payload); // Debug log
 
+      // Send POST request
       await axios.post("http://localhost:8000/api/solutions/", payload, {
         headers: {
           "Content-Type": "application/json",
@@ -60,13 +59,13 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
       alert("Solution submitted successfully!");
       handleClose();
     } catch (err) {
-      console.error("Error submitting solution:", err); // Log error to console for debugging
+      console.error("Error submitting solution:", err); // Log error for debugging
       setError("Failed to submit the solution. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{`Create a ${solutionType} Solution`}</DialogTitle>

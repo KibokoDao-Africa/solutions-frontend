@@ -1,35 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../UserContext'; // Import the UserContext hook
 import logo from '../assets/images/solutionslogobg.png';
-const Navbar = () => {
-  const [username, setUsername] = useState(null);
-  const navigate = useNavigate();
 
-  // On component mount, check if the user is logged in
-  useEffect(() => {
-    const user = localStorage.getItem('username');
-    console.log('Retrieved user from localStorage:', user); // Debug log
-    if (user) {
-      setUsername(user);
-    }
-  }, []);
+const Navbar = () => {
+  const { username, setUser } = useUser(); // Access global user context
+  const navigate = useNavigate();
 
   // Logout functionality
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
-    setUsername(null); // Remove the username from state
-    navigate('/login'); // Redirect to the login page
+    localStorage.removeItem('user_id');
+    if (setUser) {
+      setUser({ userId: null, username: null }); // Update context state
+      navigate('/login'); // Redirect to the login page
+    } else {
+      console.error('setUser is not defined');
+    }
   };
 
   // Handle logo click to reload the home page
   const handleLogoClick = () => {
     navigate('/'); // Navigate to home page
   };
-
-  console.log('Current username:', username); // Debug log
 
   return (
     <AppBar position="static">
@@ -50,7 +46,6 @@ const Navbar = () => {
               }}
               onClick={handleLogoClick} // Click handler to reload home page
             />
-            {/* Text for Solutions Portal */}
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Solutions Portal
             </Typography>
