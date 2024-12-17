@@ -29,7 +29,7 @@ export const UserProvider = ({ children }) => {
 
         if (response.data) {
           setUser({
-            userId: response.data.userId,
+            userId: response.data.user.id,
             username: response.data.username,
             token, // Retain token after user data fetch
           });
