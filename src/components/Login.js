@@ -62,7 +62,7 @@ const Login = () => {
         localStorage.setItem('refreshToken', response.data.refresh);
         
         // Use context to store user data instead of directly in localStorage
-        setUser({ userId: response.data.user_id, username, token: response.data.access });
+        setUser({ userId: response.data.user.id, username, token: response.data.access });
 
         alert('Login successful! Redirecting to home...');
         navigate('/'); // Redirect to home page
