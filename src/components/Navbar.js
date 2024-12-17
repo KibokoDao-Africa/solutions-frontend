@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../UserContext'; // Import the UserContext hook
 import logo from '../assets/images/solutionslogobg.png';
 
 const Navbar = () => {
-  const { username, setUser } = useUser(); // Access global user context
+  const { user, setUser } = useUser(); // Access global user context (assuming user object contains userId and username)
   const navigate = useNavigate();
 
   // Logout functionality
@@ -23,20 +23,15 @@ const Navbar = () => {
     navigate('/login'); 
   };
 
-  // Handle login (assuming user data is available after login)
-  const handleLogin = (userData) => {
-    const { userId, username } = userData;
+  // Check if user is already logged in on initial render
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('user_id');
+    const storedUsername = localStorage.getItem('username');
 
-    // Update the context state with the logged-in user data
-    setUser({ userId, username });
-
-    // Save user data to localStorage
-    localStorage.setItem('user_id', userId);
-    localStorage.setItem('username', username);
-    
-    // Navigate to the home page after login
-    navigate('/');
-  };
+    if (storedUserId && storedUsername) {
+      setUser({ userId: storedUserId, username: storedUsername });
+    }
+  }, [setUser]);
 
   // Handle logo click to reload the home page
   const handleLogoClick = () => {
@@ -65,11 +60,11 @@ const Navbar = () => {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Solutions Portal
             </Typography>
-            {username ? (
+            {user?.username ? (
               // Show username and logout button if the user is logged in
               <Box display="flex" alignItems="center">
                 <Typography variant="body1" sx={{ marginRight: 2 }}>
-                  Welcome, {username}
+                  Welcome, {user.username}
                 </Typography>
                 <Button color="inherit" onClick={handleLogout}>
                   Logout
@@ -77,7 +72,7 @@ const Navbar = () => {
               </Box>
             ) : (
               // Show Login button if the user is not logged in
-              <Button color="inherit" component={Link} to="/login" onClick={() => handleLogin({ userId: '123', username: 'JohnDoe' })}>
+              <Button color="inherit" component={Link} to="/login">
                 Login
               </Button>
             )}
