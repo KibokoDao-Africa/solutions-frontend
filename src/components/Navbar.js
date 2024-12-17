@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from '../UserContext'; // Import the UserContext hook
 import logo from '../assets/images/solutionslogobg.png';
 
 const Navbar = () => {
-  const { user, setUser } = useUser(); // Access global user context
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   // Logout functionality
@@ -16,8 +15,8 @@ const Navbar = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('user_id');
 
-    // Update the context state to logout user
-    setUser({ userId: null, username: null });
+    // Update the user state to null
+    setUser(null);
 
     // Redirect to the login page
     navigate('/login');
@@ -31,7 +30,7 @@ const Navbar = () => {
     if (storedUserId && storedUsername) {
       setUser({ userId: storedUserId, username: storedUsername });
     }
-  }, [setUser]);
+  }, []);
 
   // Handle logo click to reload the home page
   const handleLogoClick = () => {
