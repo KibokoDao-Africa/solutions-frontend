@@ -16,66 +16,79 @@ const Login = () => {
   const [isNewUser, setIsNewUser] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(false);
 
+  // Function for handling form submission
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    if (isResetPassword) {
-      if (!/\S+@\S+\.\S+/.test(email)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-
-      // Password reset request
-      await axios.post('http://localhost:8000/api/password_reset/', { email });
-      alert('Password reset link sent to your email.');
-      setIsResetPassword(false);
-    } else {
-      if (isNewUser) {
-        // Validate email and phone number
-        if (!/\S+@\S+\.\S+/.test(email)) {
-          alert('Please enter a valid email address.');
-          return;
-        }
-
-        if (!/^\d{10}$/.test(phone)) {
-          alert('Please enter a valid 10-digit phone number.');
-          return;
-        }
-
-        // Register new user
-        await axios.post('http://localhost:8000/api/register/', { 
-          username, 
-          password, 
-          email, 
-          phone, 
-          first_name: firstName, 
-          last_name: lastName 
-        });
-        alert('Account created! Redirecting to login...');
-        navigate('/login'); // Redirect to login page
+    e.preventDefault();
+    try {
+      if (isResetPassword) {
+        await handlePasswordReset();
+      } else if (isNewUser) {
+        await handleRegister();
       } else {
-        // Log in existing user
-        const response = await axios.post('http://localhost:8000/api/login/', { username, password });
-        
-        // Store tokens and user data in localStorage
-        localStorage.setItem('accessToken', response.data.access);
-        localStorage.setItem('refreshToken', response.data.refresh);
-        
-        // Use context to store user data instead of directly in localStorage
-        setUser({ userId: response.data.user.id, username, token: response.data.access });
-
-        alert('Login successful! Redirecting to home...');
-        navigate('/'); // Redirect to home page
+        await handleLogin();
       }
+    } catch (error) {
+      handleError(error);
     }
-  } catch (error) {
+  };
+
+  // Password reset handler
+  const handlePasswordReset = async () => {
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    await axios.post('http://localhost:8000/api/password_reset/', { email });
+    alert('Password reset link sent to your email.');
+    setIsResetPassword(false);
+  };
+
+  // Register new user handler
+  const handleRegister = async () => {
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    await axios.post('http://localhost:8000/api/register/', { 
+      username, 
+      password, 
+      email, 
+      phone, 
+      first_name: firstName, 
+      last_name: lastName 
+    });
+    alert('Account created! Redirecting to login...');
+    navigate('/login'); // Redirect to login page
+  };
+
+  // Login handler
+  const handleLogin = async () => {
+    const response = await axios.post('http://localhost:8000/api/login/', { username, password });
+
+    // Store tokens and user data in localStorage
+    localStorage.setItem('accessToken', response.data.access);
+    localStorage.setItem('refreshToken', response.data.refresh);
+
+    // Use context to store user data
+    setUser({ userId: response.data.user.id, username, token: response.data.access });
+
+    alert('Login successful! Redirecting to home...');
+    navigate('/'); // Redirect to home page
+  };
+
+  // Error handler
+  const handleError = (error) => {
     const errorMessage = error.response?.data?.detail || error.message || 'An unknown error occurred.';
     console.error('Error:', errorMessage);
     alert(`Authentication failed: ${errorMessage}`);
-  }
-};
+  };
 
-  
   return (
     <Container maxWidth="xs">
       <Box
