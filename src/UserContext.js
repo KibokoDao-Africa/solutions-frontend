@@ -10,8 +10,8 @@ export const UserProvider = ({ children }) => {
   const [username, setUsername] = useState(localStorage.getItem("username") || null);
   const [token, setToken] = useState(localStorage.getItem("accessToken") || null);
   
-  // Function to update user information
-  const updateUser = ({ userId, username, token }) => {
+  // Function to update user information (renamed to setUser for consistency)
+  const setUser = ({ userId, username, token }) => {
     setUserId(userId);
     setUsername(username);
     setToken(token);
@@ -41,7 +41,7 @@ export const UserProvider = ({ children }) => {
 
         if (response.data) {
           // If response is valid, update user context
-          updateUser({
+          setUser({
             userId: response.data.userId,
             username: response.data.username,
             token, // Retain token after user data fetch
@@ -60,7 +60,7 @@ export const UserProvider = ({ children }) => {
   }, [token]); // Run effect only when the token changes
 
   return (
-    <UserContext.Provider value={{ userId, updateUser, username, token }}>
+    <UserContext.Provider value={{ userId, setUser, username, token }}>
       {children}
     </UserContext.Provider>
   );
