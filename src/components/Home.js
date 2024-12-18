@@ -30,7 +30,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:8000/api/solutions/')
+      .get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
       .then((response) => {
         setSolutions(response.data);
       })
