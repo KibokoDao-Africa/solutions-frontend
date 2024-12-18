@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import jwtDecode from "jwt-decode";  // Import jwt-decode to decode the token
+import { jwtDecode } from 'jwt-decode';
 
 // Create the Context
 const UserContext = createContext();
