@@ -87,7 +87,7 @@ const Login = () => {
       // Store tokens and user data in localStorage
       localStorage.setItem('accessToken', access_token);
       localStorage.setItem('refreshToken', refresh_token);
-      localStorage.setItem('userId', user.id);
+      localStorage.setItem('user_id', user.id);
       localStorage.setItem('username', user.username);
       localStorage.setItem('email', user.email);
 
