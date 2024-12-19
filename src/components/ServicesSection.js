@@ -25,7 +25,7 @@ const ServicesSection = () => {
 
   const handleSubmitSolution = async (data) => {
     try {
-      const response = await axios.post("http://localhost:8000/api/solutions/", {
+      const response = await axios.post("https://solutionscenter-backend-production.up.railway.app/api/solutions/", {
         ...data,
         userId, // Include userId in the payload
       });
