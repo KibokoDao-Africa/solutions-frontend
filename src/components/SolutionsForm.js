@@ -10,33 +10,25 @@ import {
   Alert,
   Typography,
   Box,
+  Divider,
 } from "@mui/material";
-import axios from "axios";
-import { useUser } from "../UserContext"; // Import UserContext hook
 
-const SolutionsForm = ({ open, handleClose, solutionType }) => {
+const SolutionsForm = ({ open, handleClose, solutionType, userId, onSubmit }) => {
   const [description, setDescription] = useState("");
   const [terms, setTerms] = useState("");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { userId } = useUser(); // Get userId from UserContext
-
   const isSell = solutionType === "sell";
   const isRequest = solutionType === "request";
   const isVolunteer = solutionType === "volunteer";
 
-  const handleSubmit = async () => {
+  const handleFormSubmit = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Ensure userId is available
-      if (!userId) {
-        throw new Error("User not logged in. Please log in to submit a solution.");
-      }
-
       // Construct the payload
       const payload = {
         solution_type: solutionType,
@@ -44,22 +36,16 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
         terms: terms || null,
         ...(isSell && { amount_to_charge: parseFloat(amount) }),
         ...(isRequest && { amount_willing_to_pay: parseFloat(amount) }),
-        user_id: userId, // Use userId from context
+        user_id: userId,
       };
 
-      console.log("Payload being sent:", payload); // Debug log
-
-      // Send POST request
-      await axios.post("http://localhost:8000/api/solutions/", payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Delegate to the onSubmit function provided by the parent component
+      await onSubmit(payload);
 
       alert("Solution submitted successfully!");
       handleClose();
     } catch (err) {
-      console.error("Error submitting solution:", err); // Log error for debugging
+      console.error("Error submitting solution:", err);
       setError("Failed to submit the solution. Please try again.");
     } finally {
       setLoading(false);
@@ -68,9 +54,11 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{`Create a ${solutionType} Solution`}</DialogTitle>
-      <DialogContent>
-        <Box sx={{ mb: 2 }}>
+      <DialogTitle sx={{ fontWeight: 700, color: "#9b51e0" }}>
+        {`Create a ${solutionType} Solution`}
+      </DialogTitle>
+      <DialogContent sx={{ padding: 3 }}>
+        <Box sx={{ mb: 3 }}>
           <Typography variant="body2" color="textSecondary">
             {isVolunteer
               ? "Provide a description of your volunteering offer."
@@ -83,9 +71,16 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           multiline
-          rows={3}
+          rows={4}
           margin="normal"
           required
+          sx={{
+            backgroundColor: "#f9f9f9",
+            borderRadius: 2,
+            "& .MuiInputBase-root": {
+              borderRadius: 2,
+            },
+          }}
         />
         <TextField
           fullWidth
@@ -93,8 +88,15 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
           value={terms}
           onChange={(e) => setTerms(e.target.value)}
           multiline
-          rows={2}
+          rows={3}
           margin="normal"
+          sx={{
+            backgroundColor: "#f9f9f9",
+            borderRadius: 2,
+            "& .MuiInputBase-root": {
+              borderRadius: 2,
+            },
+          }}
         />
         {(isSell || isRequest) && (
           <TextField
@@ -105,19 +107,57 @@ const SolutionsForm = ({ open, handleClose, solutionType }) => {
             onChange={(e) => setAmount(e.target.value)}
             margin="normal"
             required
+            sx={{
+              backgroundColor: "#f9f9f9",
+              borderRadius: 2,
+              "& .MuiInputBase-root": {
+                borderRadius: 2,
+              },
+            }}
           />
         )}
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
+        <Divider sx={{ my: 2 }} />
+        <Box sx={{ textAlign: "center" }}>
+          <Typography variant="body2" color="textSecondary">
+            Ensure all information is correct before submission.
+          </Typography>
+        </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} disabled={loading}>
+      <DialogActions sx={{ padding: 3 }}>
+        <Button
+          onClick={handleClose}
+          disabled={loading}
+          sx={{
+            backgroundColor: "#ff6900",
+            color: "#fff",
+            fontWeight: 600,
+            borderRadius: 2,
+            "&:hover": {
+              backgroundColor: "#e85e00",
+            },
+          }}
+        >
           Cancel
         </Button>
         <Button
-          onClick={handleSubmit}
+          onClick={handleFormSubmit}
           variant="contained"
           color="primary"
           disabled={loading || !description || ((isSell || isRequest) && !amount)}
+          sx={{
+            backgroundColor: "#9b51e0",
+            color: "#fff",
+            fontWeight: 600,
+            borderRadius: 2,
+            "&:hover": {
+              backgroundColor: "#7a3da1",
+            },
+          }}
         >
           {loading ? <CircularProgress size={24} /> : "Submit"}
         </Button>

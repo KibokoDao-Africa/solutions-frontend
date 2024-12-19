@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Grid, Card, CardContent, Button } from "@mui/material";
 import { FaHandsHelping, FaLightbulb, FaCoins } from "react-icons/fa";
 import { motion } from "framer-motion";
 import SolutionsForm from "./SolutionsForm";
+import axios from "axios";
 
 const ServicesSection = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [currentSolutionType, setCurrentSolutionType] = useState("");
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    // Retrieve the userId from local storage
+    const storedUserId = localStorage.getItem("user_id");
+    setUserId(storedUserId);
+  }, []);
 
   const handleOpenForm = (type) => {
     setCurrentSolutionType(type);
@@ -15,8 +23,20 @@ const ServicesSection = () => {
 
   const handleCloseForm = () => setFormOpen(false);
 
-  const handleSubmitSolution = (data) => {
-    console.log("Submitted Data:", data); // Replace with API call in the form component
+  const handleSubmitSolution = async (data) => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/solutions/", {
+        ...data,
+        userId, // Include userId in the payload
+      });
+
+      console.log("API Response:", response.data);
+      alert("Solution submitted successfully!");
+      handleCloseForm();
+    } catch (error) {
+      console.error("Error submitting solution:", error);
+      alert("Failed to submit the solution. Please try again.");
+    }
   };
 
   const services = [
@@ -107,12 +127,26 @@ const ServicesSection = () => {
           </Grid>
         ))}
       </Grid>
-      <SolutionsForm
-        open={formOpen}
-        handleClose={handleCloseForm}
-        solutionType={currentSolutionType}
-        handleSubmit={handleSubmitSolution}
-      />
+      {userId ? (
+        <SolutionsForm
+          open={formOpen}
+          handleClose={handleCloseForm}
+          solutionType={currentSolutionType}
+          userId={userId} // Pass userId as a prop
+          handleSubmit={handleSubmitSolution}
+        />
+      ) : (
+        <Typography
+          variant="body1"
+          sx={{
+            color: "#ff0000",
+            textAlign: "center",
+            mt: 4,
+          }}
+        >
+          Please log in to submit a solution.
+        </Typography>
+      )}
     </Box>
   );
 };
