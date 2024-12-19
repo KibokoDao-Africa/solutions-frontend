@@ -43,7 +43,7 @@ const Login = () => {
       alert('Please enter a valid email address.');
       return;
     }
-    await axios.post('http://localhost:8000/api/password_reset/', { email });
+    await axios.post('https://solutionscenter-backend-production.up.railway.app/api/password_reset/', { email });
     alert('Password reset link sent to your email.');
     setIsResetPassword(false);
   };
@@ -60,7 +60,7 @@ const Login = () => {
       return;
     }
 
-    await axios.post('http://localhost:8000/api/register/', { 
+    await axios.post('https://solutionscenter-backend-production.up.railway.app/api/register/', { 
       username, 
       password, 
       email, 
@@ -75,7 +75,7 @@ const Login = () => {
   // Login handler
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/api/login/', { username, password });
+      const response = await axios.post('https://solutionscenter-backend-production.up.railway.app/api/login/', { username, password });
 
       // Ensure the response contains access_token and refresh_token
       const { access_token, refresh_token, user } = response.data;
