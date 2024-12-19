@@ -133,7 +133,7 @@ const ServicesSection = () => {
           handleClose={handleCloseForm}
           solutionType={currentSolutionType}
           userId={userId} // Pass userId as a prop
-          handleSubmit={handleSubmitSolution}
+          onSubmit={handleSubmitSolution}
         />
       ) : (
         <Typography
