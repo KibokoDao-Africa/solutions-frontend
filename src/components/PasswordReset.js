@@ -27,7 +27,7 @@ const ResetPassword = () => {
     }
 
     try {
-      await axios.post('http://localhost:8000/api/password_reset_confirm/', { token, email, password });
+      await axios.post('https://solutionscenter-backend-production.up.railway.app/password_reset_confirm/', { token, email, password });
       alert('Password reset successful! Please log in.');
     } catch (error) {
       console.error(error);
