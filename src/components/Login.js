@@ -60,7 +60,7 @@ const Login = () => {
       return;
     }
 
-    await axios.post('https://solutionscenter-backend-production.up.railway.app/api/register/', { 
+    await axios.post('https://solutions-center-production.up.railway.app/api/register/', { 
       username, 
       password, 
       email, 
@@ -75,24 +75,36 @@ const Login = () => {
   // Login handler
   const handleLogin = async () => {
     try {
-      const response = await axios.post('https://solutionscenter-backend-production.up.railway.app/api/login/', { username, password });
+      const response = await axios.post('https://solutions-center-production.up.railway.app/api/login/', { email, password });
 
       // Ensure the response contains access_token and refresh_token
-      const { access_token, refresh_token, user } = response.data;
+      const data = await response.data;
 
-      if (!access_token || !refresh_token || !user) {
-        throw new Error('Invalid login response from the server');
+
+
+      // if (!access_token || !refresh_token || !user) {
+      //   throw new Error('Invalid login response from the server');
+      // }
+      // console.log(data);
+      if(data.status=true){
+
+        const access_token = data.access_token;
+        localStorage.setItem('accessToken', access_token);
+        alert('Login successful! Redirecting to home...');
+        navigate('/');
+      }else{
+        alert('Login failed! Please try again...');
       }
-
+      
+      // console.log(access_token);
       // Store tokens and user data in localStorage
-      localStorage.setItem('accessToken', access_token);
-      localStorage.setItem('refreshToken', refresh_token);
-      localStorage.setItem('user_id', user.id);
-      localStorage.setItem('username', user.username);
-      localStorage.setItem('email', user.email);
+      // localStorage.setItem('accessToken', access_token);
+      // localStorage.setItem('refreshToken', refresh_token);
+      // localStorage.setItem('user_id', user.id);
+      // localStorage.setItem('username', user.username);
+      // localStorage.setItem('email', user.email);
 
-      alert('Login successful! Redirecting to home...');
-      navigate('/'); // Redirect to home page
+       // Redirect to home page
     } catch (error) {
       handleError(error);
     }
@@ -119,10 +131,10 @@ const Login = () => {
             <>
               <TextField
                 fullWidth
-                label="Username"
+                label="Email"
                 variant="outlined"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 margin="normal"
               />
