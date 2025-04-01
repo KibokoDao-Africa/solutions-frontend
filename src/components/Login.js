@@ -75,7 +75,7 @@ const Login = () => {
   // Login handler
   const handleLogin = async () => {
     try {
-      const response = await axios.post('https://solutions-center-production.up.railway.app/api/login/', { email, password });
+      const response = await axios.post('https://solutions-center-production.up.railway.app/api/login/', {email, password });
 
       // Ensure the response contains access_token and refresh_token
       const data = await response.data;
@@ -90,6 +90,7 @@ const Login = () => {
 
         const access_token = data.access_token;
         localStorage.setItem('accessToken', access_token);
+        localStorage.setItem("user_id", data.user_id);
         alert('Login successful! Redirecting to home...');
         navigate('/');
       }else{
@@ -158,7 +159,7 @@ const Login = () => {
                     required
                     margin="normal"
                   />
-                  <TextField
+                  {/* <TextField
                     fullWidth
                     label="Email"
                     variant="outlined"
@@ -167,7 +168,7 @@ const Login = () => {
                     required
                     margin="normal"
                     type="email"
-                  />
+                  /> */}
                   <TextField
                     fullWidth
                     label="Phone Number"
@@ -178,6 +179,17 @@ const Login = () => {
                     margin="normal"
                     type="tel"
                     helperText="Enter a 10-digit phone number"
+                  /> 
+
+                  <TextField
+                    fullWidth
+                    label="Username"
+                    variant="outlined"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    margin="normal"
+                    type="username"
                   />
                 </>
               )}
