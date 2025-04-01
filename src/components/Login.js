@@ -86,7 +86,7 @@ const Login = () => {
       //   throw new Error('Invalid login response from the server');
       // }
       // console.log(data);
-      if(data.status=true){
+      if(data.status===true){
 
         const access_token = data.access_token;
         localStorage.setItem('accessToken', access_token);
