@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, useTheme, Paper, Divider } from '@mui/material';
+import { Box, Typography, useTheme, Paper, Divider, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import SolutionsList from '../components/SolutionsList';
 import ServicesSection from '../components/ServicesSection';
+import SolutionsForm from '../components/SolutionsForm';
 
 // Animation Variants
 const fadeIn = {
@@ -26,16 +27,77 @@ const Home = () => {
   const [solutions, setSolutions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
+  const [formOpen, setFormOpen] = useState(false);
+  const [currentSolutionType, setCurrentSolutionType] = useState("volunteer");
+  const [userId, setUserId] = useState(null);
   const muiTheme = useTheme();
 
   useEffect(() => {
+    // Fetch solutions
     axios
-      .get('https://solutionscenter-backend-production.up.railway.app/api/solutions/')
-      .then((response) => {
-        setSolutions(response.data);
-      })
-      .catch((error) => console.error('Error fetching solutions:', error));
+    .get("https://solutions-center-production.up.railway.app/api/solution/", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer `+localStorage.getItem("accessToken"), // Example for token authentication
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      setSolutions(response.data);
+    })
+    .catch((error) => console.error("Error fetching solutions:", error));
+  
+    // Retrieve the userId from local storage
+
+  
+    const storedUserId = localStorage.getItem("user_id");
+    setUserId(storedUserId);
+
+    console.log(userId);
   }, []);
+
+  const handleOpenForm = () => {
+    setFormOpen(true);
+    
+  };
+
+  const handleCloseForm = () => {
+    setFormOpen(false);
+  };
+
+  const handleSubmitSolution = async (data) => {
+    try {
+      console.log("This is the data being sent over"+{...data})
+      const response = await axios.post("https://solutions-center-production.up.railway.app/api/solution/", {
+        ...data, // Include userId in the payload
+      },{
+        headers:{
+          "Content-Type": "application/json",
+          Authorization: `Bearer `+localStorage.getItem("accessToken"),
+        }
+      });
+
+      console.log("API Response:", response.data);
+      alert("Solution submitted successfully!");
+      handleCloseForm();
+      
+      // Refresh the solutions list
+      axios
+        .get('https://solutions-center-production.up.railway.app/api/solution/',{
+          headers:{
+            "Content-Type": "application/json",
+            Authorization: `Bearer `+localStorage.getItem("accessToken"),
+          }
+        })
+        .then((response) => {
+          setSolutions(response.data);
+        })
+        .catch((error) => console.error('Error refreshing solutions:', error));
+    } catch (error) {
+      console.error("Error submitting solution:", error);
+      alert("Failed to submit the solution. Please try again.");
+    }
+  };
 
   return (
     <Box
@@ -112,6 +174,40 @@ const Home = () => {
         </Paper>
       </motion.div>
 
+      {/* Quick Submit Solution Button */}
+      <Box sx={{ mt: 6, textAlign: 'center' }}>
+        {solutions.length>0 ? (
+          <Button
+            variant="contained"
+            onClick={handleOpenForm}
+            sx={{
+              borderRadius: 2,
+              px: 4,
+              py: 1.5,
+              fontWeight: 600,
+              backgroundColor: "#9b51e0",
+              color: "#fff",
+              "&:hover": {
+                backgroundColor: "#7a3da1",
+              },
+              boxShadow: 3,
+            }}
+          >
+            Add New Solution
+          </Button>
+        ) : (
+          <Typography
+            variant="body1"
+            sx={{
+              color: "#ff0000",
+              textAlign: "center",
+              mb: 2,
+            }}
+          >
+            Please log in to submit a solution.
+          </Typography>
+        )}
+      </Box>
         
       {/* Services Section */}
       <ServicesSection />
@@ -126,6 +222,17 @@ const Home = () => {
         currentPage={currentPage}
         handlePageChange={(event, value) => setCurrentPage(value)}
       />
+
+      {/* Solutions Form Dialog */}
+      {userId && (
+        <SolutionsForm
+          open={formOpen}
+          handleClose={handleCloseForm}
+          solutionType={currentSolutionType}
+          userId={userId}
+          onSubmit={handleSubmitSolution}
+        />
+      )}
     </Box>
   );
 };
