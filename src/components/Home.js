@@ -54,10 +54,11 @@ const Home = () => {
     setUserId(storedUserId);
 
     console.log(userId);
-  }, []);
+  }, [userId]);
 
   const handleOpenForm = () => {
     setFormOpen(true);
+    setCurrentSolutionType("volunteer");
     
   };
 
