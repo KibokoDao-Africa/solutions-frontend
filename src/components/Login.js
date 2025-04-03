@@ -86,14 +86,13 @@ const Login = () => {
       //   throw new Error('Invalid login response from the server');
       // }
       // console.log(data);
-      if (data && data.status === true) {
-
+    if (data.status === true) {
         const access_token = data.access_token;
         localStorage.setItem('accessToken', access_token);
         localStorage.setItem("user_id", data.user_id);
         alert('Login successful! Redirecting to home...');
         navigate('/');
-      }else{
+      } else {
         alert('Login failed! Please try again...');
       }
       
